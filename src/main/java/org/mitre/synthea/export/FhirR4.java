@@ -719,6 +719,7 @@ public class FhirR4 {
     }
 
     if (encounter.clinician != null) {
+      
       String practitionerFullUrl = findPractitioner(encounter.clinician, bundle);
 
       if (practitionerFullUrl != null) {
@@ -726,7 +727,13 @@ public class FhirR4 {
       } else {
         BundleEntryComponent practitioner = practitioner(bundle, encounter.clinician);
         encounterResource.addParticipant().setIndividual(new Reference(practitioner.getFullUrl()));
+        practitionerFullUrl = practitioner.getFullUrl();
       }
+      List<Reference> practitionersList = patient.getGeneralPractitioner();
+      if(practitionersList.size() == 0) {
+    	  patient.addGeneralPractitioner(new Reference(practitionerFullUrl));
+      }
+      
       encounterResource.getParticipantFirstRep().getIndividual()
           .setDisplay(encounter.clinician.getFullname());
       encounterResource.getParticipantFirstRep().addType(mapCodeToCodeableConcept(
